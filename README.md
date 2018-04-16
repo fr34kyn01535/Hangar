@@ -1,7 +1,7 @@
 # Hangar
 RocketMod Plugin Repository
 
-#Environment Variables
+# Environment Variables
 ```
 PORT=8080
 DB_HOST=localhost
