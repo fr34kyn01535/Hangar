@@ -8,10 +8,10 @@ app.get('/', function(req, res){
 }); 
 
 //https://docs.microsoft.com/en-us/nuget/api/overview
-app.use('/registration', require('./nuget/v3/registrationsBaseUrl.js'));
-app.use('/search', require('./nuget/v3/searchQueryService.js'));
-app.use('/package', require('./nuget/v3/packagePublish.js'));
-app.use('/packages', require('./nuget/v3/packageBaseAddress.js'));
+app.use('/registration', require('./app/nuget/v3/registrationsBaseUrl.js'));
+app.use('/search', require('./app/nuget/v3/searchQueryService.js'));
+app.use('/package', require('./app/nuget/v3/packagePublish.js'));
+app.use('/packages', require('./app/nuget/v3/packageBaseAddress.js'));
 
 app.listen(process.env.PORT,function(){
     console.log("Listening on "+process.env.PORT);
