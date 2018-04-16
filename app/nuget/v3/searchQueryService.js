@@ -45,6 +45,8 @@ router.get('/', function(req, res) {
     var preRelease = req.query.prerelease || false;
     var semVerLevel = req.query.semVerLevel;
 
+    
+
     res.send('searchQueryService');
 });
 

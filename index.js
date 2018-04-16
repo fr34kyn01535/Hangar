@@ -14,7 +14,7 @@ const app = require('express')();
 app.use(require('body-parser').json());
 
 app.use(function (req, res, next) {
-  var apiKey = req.headers["X-NuGet-ApiKey"];
+  var apiKey = req.headers["x-nuget-apikey"];
   if(!apiKey){
     req.authenticated = false;
     next();
@@ -25,6 +25,12 @@ app.use(function (req, res, next) {
     next();
   })
 });
+
+app.use(require('express-basic-auth')({ 
+  authorizer: function(username, password) {
+    return username.startsWith('A') && password.startsWith('secret')
+  }
+}));
 
 app.get('/', function(req, res){ 
     res.redirect('/index.json');
@@ -51,7 +57,7 @@ app.get('/index.json',function(req,res){
             "comment": "Base URL of where NuGet packages are stored"
           },
           {
-            "@id": process.env.ADDRESS +"/package",
+            "@id": process.env.ADDRESS +"/api/v2/package",
             "@type": "PackagePublish/2.0.0"
           }
         ],
@@ -65,7 +71,7 @@ app.get('/index.json',function(req,res){
 //https://docs.microsoft.com/en-us/nuget/api/overview
 app.use('/registration', require('./app/nuget/v3/registrationsBaseUrl'));
 app.use('/query', require('./app/nuget/v3/searchQueryService'));
-app.use('/package', require('./app/nuget/v3/packagePublish'));
+app.use('/api/v2/package', require('./app/nuget/v3/packagePublish'));
 app.use('/packages', require('./app/nuget/v3/packageBaseAddress'));
 
 app.listen(process.env.PORT,function(){
