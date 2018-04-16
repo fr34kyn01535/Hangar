@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const db = require('./models/index');
-
+//db.sequelize.drop();
 db.sequelize.sync().then(() => {
     console.log("Database up to date.");
 }).catch(error => {
@@ -14,12 +14,44 @@ const app = require('express')();
 app.use(require('body-parser').json());
 
 app.get('/', function(req, res){ 
-    res.send("Hello world");
+    res.redirect('/index.json');
 }); 
+
+app.get('/index.json',function(req,res){
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify( {
+        "version": "3.0.0",
+        "resources": [
+          {
+            "@id": process.env.ADDRESS + "/query",
+            "@type": "SearchQueryService",
+            "comment": "Query endpoint of NuGet Search service"
+          },
+          {
+            "@id": process.env.ADDRESS + "/registration",
+            "@type": "RegistrationsBaseUrl",
+            "comment": "Base URL of storage where NuGet package registration info is stored"
+          },
+          {
+            "@id": process.env.ADDRESS + "/packages",
+            "@type": "PackageBaseAddress/3.0.0",
+            "comment": "Base URL of where NuGet packages are stored"
+          },
+          {
+            "@id": process.env.ADDRESS +"/package",
+            "@type": "PackagePublish/2.0.0"
+          }
+        ],
+        "@context": {
+          "@vocab": "http://schema.nuget.org/services#",
+          "comment": "http://www.w3.org/2000/01/rdf-schema#comment"
+        }
+      }));
+});
 
 //https://docs.microsoft.com/en-us/nuget/api/overview
 app.use('/registration', require('./app/nuget/v3/registrationsBaseUrl'));
-app.use('/search', require('./app/nuget/v3/searchQueryService'));
+app.use('/query', require('./app/nuget/v3/searchQueryService'));
 app.use('/package', require('./app/nuget/v3/packagePublish'));
 app.use('/packages', require('./app/nuget/v3/packageBaseAddress'));
 

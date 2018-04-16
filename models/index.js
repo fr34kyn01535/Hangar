@@ -34,13 +34,13 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 
-var User = db.User = sequelize.define('user', {
+var User = db.User = sequelize.define('User', {
   id: { type: Sequelize.INTEGER, primaryKey: true },
   userName: Sequelize.STRING,
   token: Sequelize.STRING
 });
 
-var Session = db.Session = sequelize.define('session', {
+var Session = db.Session = sequelize.define('Session', {
   token: { type: Sequelize.STRING, primaryKey: true },
   expiration: Sequelize.DATE,
   user: {
@@ -51,5 +51,42 @@ var Session = db.Session = sequelize.define('session', {
       }
     }
 });
+
+var Package = db.Package = sequelize.define('Package', {
+  id: { type: Sequelize.STRING, primaryKey: true },
+  version: Sequelize.STRING,
+  description: Sequelize.STRING,
+  summary: Sequelize.STRING,
+  title: Sequelize.STRING,
+  verified: Sequelize.BOOLEAN,
+  projectUrl: Sequelize.STRING,
+  totalDownloads: Sequelize.INTEGER,
+  tags: {
+      type: Sequelize.STRING,
+      get: function () {
+          return this.getDataValue('tags').split(';')
+      },
+      set: function (val) {
+        this.setDataValue('tags',val.join(';'));
+      }
+  },
+  authors: {
+      type: Sequelize.STRING,
+      get: function () {
+          return this.getDataValue('authors').split(';')
+      },
+      set: function (val) {
+        this.setDataValue('authors',val.join(';'));
+      }
+  }
+});
+User.hasMany(Package,{as: 'packages'});
+
+var PackageVersion = db.PackageVersion = sequelize.define('PackageVersion', {
+  version: { type: Sequelize.STRING, primaryKey: true },
+  downloads: Sequelize.INTEGER,
+  listed: {type: Sequelize.BOOLEAN, defaultValue: true }
+});
+Package.hasMany(PackageVersion,{as: 'versions'});
 
 module.exports = db;
