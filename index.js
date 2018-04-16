@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const db = require('./models/index');
-//db.sequelize.drop();
+
 db.sequelize.sync().then(() => {
     console.log("Database up to date.");
 }).catch(error => {
@@ -12,6 +12,19 @@ db.sequelize.sync().then(() => {
 
 const app = require('express')();
 app.use(require('body-parser').json());
+
+app.use(function (req, res, next) {
+  var apiKey = req.headers["X-NuGet-ApiKey"];
+  if(!apiKey){
+    req.authenticated = false;
+    next();
+  }
+  else
+  db.User.findOne({ where: {apiKey: apiKey} }).then(user => {
+    req.authenticated = user != null;
+    next();
+  })
+});
 
 app.get('/', function(req, res){ 
     res.redirect('/index.json');
