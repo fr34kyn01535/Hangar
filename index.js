@@ -1,6 +1,16 @@
 "use strict";
 require('dotenv').config();
-var app = require('express')();
+
+const db = require('./models/index');
+
+db.sequelize.sync().then(() => {
+    console.log("Database up to date.");
+}).catch(error => {
+    console.log("Error syncing database:",error);
+    process.exit(1);
+});
+
+const app = require('express')();
 app.use(require('body-parser').json());
 
 app.get('/', function(req, res){ 
@@ -8,10 +18,10 @@ app.get('/', function(req, res){
 }); 
 
 //https://docs.microsoft.com/en-us/nuget/api/overview
-app.use('/registration', require('./app/nuget/v3/registrationsBaseUrl.js'));
-app.use('/search', require('./app/nuget/v3/searchQueryService.js'));
-app.use('/package', require('./app/nuget/v3/packagePublish.js'));
-app.use('/packages', require('./app/nuget/v3/packageBaseAddress.js'));
+app.use('/registration', require('./app/nuget/v3/registrationsBaseUrl'));
+app.use('/search', require('./app/nuget/v3/searchQueryService'));
+app.use('/package', require('./app/nuget/v3/packagePublish'));
+app.use('/packages', require('./app/nuget/v3/packageBaseAddress'));
 
 app.listen(process.env.PORT,function(){
     console.log("Listening on "+process.env.PORT);

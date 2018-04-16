@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "hangar",
+    "password": null,
+    "database": "hangar",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "hangar",
+    "password": null,
+    "database": "hangar",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "hangar",
+    "password": null,
+    "database": "hangar",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
