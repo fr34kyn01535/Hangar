@@ -1,0 +1,27 @@
+{
+  "name": "hangar",
+  "version": "1.0.0",
+  "description": "RocketMod Plugin Repository",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketMod/Hangar.git"
+  },
+  "author": "Sven Mawby",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RocketMod/Hangar/issues"
+  },
+  "homepage": "https://github.com/RocketMod/Hangar#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "mysql": "^2.15.0",
+    "npm": "^5.8.0",
+    "sequelize-cli": "^4.0.0"
+  }
+}
