@@ -2,8 +2,14 @@
 require('dotenv').config();
 
 const db = require('./models/index');
+db.sequelize.sync({force: true}).then(() => {
 
-db.sequelize.sync().then(() => {
+    db.User.create({
+      id: 1,
+      userName: 'Admin',
+      apiKey: "test123"
+    });
+
     console.log("Database up to date.");
 }).catch(error => {
     console.log("Error syncing database:",error);
@@ -26,11 +32,6 @@ app.use(function (req, res, next) {
   })
 });
 
-app.use(require('express-basic-auth')({ 
-  authorizer: function(username, password) {
-    return username.startsWith('A') && password.startsWith('secret')
-  }
-}));
 
 app.get('/', function(req, res){ 
     res.redirect('/index.json');
