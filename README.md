@@ -1,5 +1,15 @@
 # Hangar
-RocketMod Plugin Repository
+This program targets at implementing a Nuget v3 compatible package repository backend. 
+The services speficiation is to be found at https://docs.microsoft.com/en-us/nuget/api/overview.
+
+Services to implenent:
+[X] Index
+[ ] RegistrationsBaseUrl
+[ ] SearchQueryService
+[ ] PackagePublis
+[ ] PackageBaseAddress
+
+Further service implementations are not planned right now.
 
 # Environment Variables
 ```
