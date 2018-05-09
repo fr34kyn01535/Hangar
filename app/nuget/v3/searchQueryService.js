@@ -45,9 +45,12 @@ router.get('/', function(req, res) {
     var preRelease = req.query.prerelease || false;
     var semVerLevel = req.query.semVerLevel;
 
-    
+    var versions = [new SearchResultResponseItemVersion("someid","1.0.0",1337)];
+    var items = [new SearchResultResponseItem("someid","1.0.0",versions)];
+    var response = new SearchResultResponse(1,items);
 
-    res.send('searchQueryService');
+
+    res.send(JSON.stringify(response));
 });
 
 module.exports = router;

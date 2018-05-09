@@ -48,6 +48,16 @@ app.get('/index.json',function(req,res){
             "comment": "Query endpoint of NuGet Search service"
           },
           {
+            "@id": process.env.ADDRESS + "/query",
+            "@type": "SearchQueryService/3.0.0-rc",
+            "comment": "Query endpoint of NuGet Search service"
+          },
+          {
+            "@id": process.env.ADDRESS + "/query",
+            "@type": "SearchQueryService/3.0.0-beta",
+            "comment": "Query endpoint of NuGet Search service"
+          },
+          {
             "@id": process.env.ADDRESS + "/registration",
             "@type": "RegistrationsBaseUrl",
             "comment": "Base URL of storage where NuGet package registration info is stored"
