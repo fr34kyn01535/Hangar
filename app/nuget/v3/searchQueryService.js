@@ -1,7 +1,7 @@
 "use strict";
 const router = require('express').Router();
 const db = require('../../../models/index');
-const Sequelize = require('Sequelize');
+const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const semver = require('semver');
 

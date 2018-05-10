@@ -1,7 +1,6 @@
-FROM node:carbon
+FROM node:8
 
 WORKDIR /usr/src/hangar
-COPY package*.json ./
 COPY . .
 RUN npm install
 
