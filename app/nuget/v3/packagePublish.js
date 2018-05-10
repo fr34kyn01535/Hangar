@@ -65,7 +65,8 @@ router.put('/', upload.single('package'),function(req, res) {
                         !fs.existsSync('packages') && fs.mkdirSync('packages');
                         !fs.existsSync('packages/'+properties.id) && fs.mkdirSync('packages/'+properties.id);
                         !fs.existsSync('packages/'+properties.id+'/'+properties.version) && fs.mkdirSync('packages/'+properties.id+'/'+properties.version);
-                        fs.renameSync(req.file.path,'packages/'+properties.id+'/'+properties.version+'/'+properties.id+'-'+properties.version+'.nupkg');
+                        fs.copyFileSync(req.file.path,'packages/'+properties.id+'/'+properties.version+'/'+properties.id+'-'+properties.version+'.nupkg');
+                        fs.unlinkSync(req.file.path);
                         fs.writeFileSync('packages/'+properties.id+'/'+properties.version+'/'+properties.id+'.nuspec',nuspecText)
                         res.status(201).end();
                     }
