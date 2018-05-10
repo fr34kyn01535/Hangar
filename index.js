@@ -2,12 +2,18 @@
 require('dotenv').config();
 
 const db = require('./models/index');
-db.sequelize.sync({force: true}).then(() => {
+db.sequelize.sync().then(() => {
 
-    db.User.create({
-      id: 1,
-      userName: 'Admin',
-      apiKey: "test123"
+    db.User.findOrCreate(
+      {
+        where: {
+          id: 1
+        },
+      defaults: { 
+        id: 1,
+        userName: 'Admin',
+        apiKey: "test123"
+      }
     });
 
     console.log("Database up to date.");
