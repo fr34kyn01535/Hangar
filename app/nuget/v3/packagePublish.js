@@ -65,7 +65,9 @@ router.put('/', upload.single('package'),function(req, res) {
                     function renameAndReturn(np){
                         !fs.existsSync('packages') && fs.mkdirSync('packages');
                         !fs.existsSync('packages/'+properties.id) && fs.mkdirSync('packages/'+properties.id);
-                        fs.renameSync(req.file.path,'packages/'+properties.id+'/'+properties.id+'-'+properties.version+'.nupkg');
+                        !fs.existsSync('packages/'+properties.id+'/'+properties.version) && fs.mkdirSync('packages/'+properties.id+'/'+properties.version);
+                        fs.renameSync(req.file.path,'packages/'+properties.id+'/'+properties.version+'/'+properties.id+'-'+properties.version+'.nupkg');
+                        fs.writeFileSync('packages/'+properties.id+'/'+properties.version+'/'+properties.id+'.nuspec',nuspecText)
                         res.status(201);
                         res.end();
                     }
@@ -119,9 +121,8 @@ router.put('/', upload.single('package'),function(req, res) {
 // https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#delete-a-package
 router.delete('/:id/:version', function(req, res) {
     if(!req.authenticated) res.status(401).end();
-    var file = './packages/' +req.params.id+ '/' + req.params.id + "-" + req.params.version +".nupkg";
+    var file = './packages/' +req.params.id+'/'+properties.version+'/'+ req.params.id + "-" + req.params.version +".nupkg";
     if(fs.existsSync(file)){
-
         db.Package.findOne({ where: {id: req.params.id, version: req.params.version} }).then(p => {
             if(p == null){
                 res.status(404);

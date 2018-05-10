@@ -17,13 +17,12 @@ class Package{
         this.id = packageContent.id;
         this.version = packageContent.version;
         this.versions = versions;
-    
+        this.registration = process.env.ADDRESS + '/registration/'+packageContent.id+'/index.json',
         this.description = packageContent.description;
         this.authors = packageContent.authors ? packageContent.authors.split(",").map(m => m.trim()) : "";
         this.iconUrl = packageContent.iconUrl;
         this.licenseUrl = packageContent.licenseUrl;
         this.projectUrl = packageContent.projectUrl;
-        this.registration = packageContent.registration;
         this.summary = packageContent.summary;
         this.tags = packageContent.tags ? packageContent.tags.split(",").map(m => m.trim()) : "";
         this.title = packageContent.title;
@@ -33,8 +32,7 @@ class Package{
 }
 
 class Version{
-    constructor(id, version, downloads){
-        this.id = id;
+    constructor(version, downloads){
         this.version = version;
         this.downloads = downloads;
     }
@@ -44,29 +42,36 @@ router.get('/', function(req, res) {
     var query = req.query.q = "";
     var skip = req.query.skip ? parseInt(req.query.skip) : 0;
     var take = req.query.take ? parseInt(req.query.take) : 20;
-    var preRelease = req.query.prerelease || false;
+    var preRelease = req.query.prerelease == true || req.query.prerelease == "true" || false;
     var semVerLevel = req.query.semVerLevel;
 
 
     db.Package.findAndCountAll({
         where: {
-            [Op.or]: [
+            [Op.and]:[
                 {
-                    summary: {
-                        [Op.like]: '%'+query+'%'
-                    }
-                },
-                {
-                    id: {
-                        [Op.like]: '%'+query+'%'
-                    }
-                },
-                {
-                    title: {
-                        [Op.like]: '%'+query+'%'
-                    }
+                    [Op.or]: [
+                        {
+                            summary: {
+                                [Op.like]: '%'+query+'%'
+                            }
+                        },
+                        {
+                            id: {
+                                [Op.like]: '%'+query+'%'
+                            }
+                        },
+                        {
+                            title: {
+                                [Op.like]: '%'+query+'%'
+                            }
+                        }
+                    ]
+                },{
+                    verified: !preRelease
                 }
             ]
+            
         },
         attributes: ['id'],
         group: ['id'],
@@ -88,7 +93,7 @@ router.get('/', function(req, res) {
                 versions = versions.sort((a,b) => { return b.commitTimeStamp - a.commitTimeStamp });
                 versions = versions.sort((a,b) => { return semver.gt(semver.coerce(a.version),semver.coerce(b.version)) });
                 let totalDownloads = versions.reduce((a, b) => a.downloads+b.downloads, 0);
-                results.push(new Package(versions[0],versions.map(v => new Version(v.id,v.version,v.downloads)),totalDownloads));
+                results.push(new Package(versions[0],versions.map(v => new Version(v.version,v.downloads)),totalDownloads));
             }
 
             var response = new QueryResult(result.count,results);

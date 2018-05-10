@@ -69,6 +69,21 @@ app.get('/index.json',function(req,res){
             "comment": "Base URL of storage where NuGet package registration info is stored"
           },
           {
+            "@id": process.env.ADDRESS + "/registration",
+            "@type": "RegistrationsBaseUrl/3.4.0",
+            "comment": "Base URL of storage where NuGet package registration info is stored"
+          },
+          {
+            "@id": process.env.ADDRESS + "/registration",
+            "@type": "RegistrationsBaseUrl/3.6.0",
+            "comment": "Base URL of storage where NuGet package registration info is stored"
+          },
+          {
+            "@id": process.env.ADDRESS + "/registration",
+            "@type": "RegistrationsBaseUrl/Versioned",
+            "comment": "Base URL of storage where NuGet package registration info is stored"
+          },
+          {
             "@id": process.env.ADDRESS + "/packages",
             "@type": "PackageBaseAddress/3.0.0",
             "comment": "Base URL of where NuGet packages are stored"
