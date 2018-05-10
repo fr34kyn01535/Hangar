@@ -2,8 +2,8 @@ FROM node:carbon
 
 WORKDIR /usr/src/hangar
 COPY package*.json ./
-RUN npm install --only=production
 COPY . .
+RUN npm install
 
 EXPOSE 8080
 
