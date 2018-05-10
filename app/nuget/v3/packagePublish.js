@@ -46,7 +46,7 @@ router.put('/', upload.single('package'),function(req, res) {
                         copyright: metadata.copyright || "",
                         language: metadata.language || "",
                         tags: metadata.tags || "",
-
+                        userId: req.user.id,
                         verified: false,
                         published: new Date(),
                         commitTimeStamp: new Date(),
@@ -57,8 +57,7 @@ router.put('/', upload.single('package'),function(req, res) {
 
                     if(!properties.id || !properties.version || !properties.description || !properties.authors){
                         fs.unlinkSync(req.file.path);
-                        res.status(400);
-                        res.end(); 
+                        res.status(400).end(); 
                         return;
                     }
 
@@ -68,8 +67,7 @@ router.put('/', upload.single('package'),function(req, res) {
                         !fs.existsSync('packages/'+properties.id+'/'+properties.version) && fs.mkdirSync('packages/'+properties.id+'/'+properties.version);
                         fs.renameSync(req.file.path,'packages/'+properties.id+'/'+properties.version+'/'+properties.id+'-'+properties.version+'.nupkg');
                         fs.writeFileSync('packages/'+properties.id+'/'+properties.version+'/'+properties.id+'.nuspec',nuspecText)
-                        res.status(201);
-                        res.end();
+                        res.status(201).end();
                     }
 
                     db.Package.findOne({ where: {id: properties.id, version: properties.version} }).then(p => {
@@ -78,9 +76,14 @@ router.put('/', upload.single('package'),function(req, res) {
                                 throw e;
                             })
                         }else{
-                            p.update(properties).then(renameAndReturn).catch(e => {
-                                throw e;
-                            })
+                            if(p.userId != req.user.id){
+                                res.status(401).end();
+                                fs.unlinkSync(req.file.path);
+                            }else{
+                                p.update(properties).then(renameAndReturn).catch(e => {
+                                    throw e;
+                                })
+                            }
                         }
                     });
                 });
@@ -112,8 +115,7 @@ router.put('/', upload.single('package'),function(req, res) {
 
     }catch(e){
         console.error(e);
-        res.status(400);
-        res.end();
+        res.status(400).end();
         fs.unlinkSync(req.file.path);
     }
 });
@@ -121,9 +123,9 @@ router.put('/', upload.single('package'),function(req, res) {
 // https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#delete-a-package
 router.delete('/:id/:version', function(req, res) {
     if(!req.authenticated) res.status(401).end();
-    var file = './packages/' +req.params.id+'/'+properties.version+'/'+ req.params.id + "-" + req.params.version +".nupkg";
+    var file = './packages/' +req.params.id+'/'+req.params.version+'/'+ req.params.id + "-" + req.params.version +".nupkg";
     if(fs.existsSync(file)){
-        db.Package.findOne({ where: {id: req.params.id, version: req.params.version} }).then(p => {
+        db.Package.findOne({ where: {id: req.params.id, version: req.params.version, userId: req.user.id} }).then(p => {
             if(p == null){
                 res.status(404);
                 res.end();

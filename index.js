@@ -34,6 +34,7 @@ app.use(function (req, res, next) {
   else
   db.User.findOne({ where: {apiKey: apiKey} }).then(user => {
     req.authenticated = user != null;
+    req.user = user;
     next();
   })
 });

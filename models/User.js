@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = function (models) {
-        models.User.hasMany(models.Package, { as: 'packages' });
+        models.User.hasMany(models.Package, { as: 'packages',foreignKey: 'userId' });
     };
 
     return User;
