@@ -1,21 +1,28 @@
 "use strict";
 const router = require('express').Router();
 const semver = require('semver');
+const fs = require('fs');
 const db = require('../../../models/index');
 
 class Catalog{
-    constructor(commitId, commitTimeStamp,count, items){
-        this.commitId = commitId;
-        this.commitTimeStamp = commitTimeStamp;
+    constructor(count, items){
         this.count = count;
         this.items = items;
     }
 }
 
+class CatalogPage{
+    constructor(count, items,lower,upper){
+        this.count = count;
+        this.items = items;
+        this.lower = lower;
+        this.upper = upper;
+        this["@id"] = process.env.ADDRESS + '/registration/'+items[0].catalogEntry.id+'/index.json#page/'+lower+'/'+upper;
+    }
+}
+
 class Package{
     constructor(packageContent){
-        this.commitId = packageContent.commitId;
-        this.commitTimeStamp = packageContent.commitTimeStamp;
         this.packageContent = process.env.ADDRESS + '/packages/'+packageContent.id+'/'+packageContent.version+'/'+packageContent.id+'-'+packageContent.version+'.nupkg';
         this.registration = process.env.ADDRESS + '/registration/'+packageContent.id+'/index.json';
 
@@ -40,6 +47,15 @@ class Package{
     }
 }
 
+class VersionPackage{
+    constructor(packageContent){
+        this.packageContent = process.env.ADDRESS + '/packages/'+packageContent.id+'/'+packageContent.version+'/'+packageContent.id+'-'+packageContent.version+'.nupkg';
+        this.registration = process.env.ADDRESS + '/registration/'+packageContent.id+'/index.json';
+        this.published = packageContent.published;
+        this.listed = packageContent.listed;
+        this["@id"] = this.registration;
+    }
+}
 
 
 router.get('/:package/index.json', function(req, res) {
@@ -49,16 +65,16 @@ router.get('/:package/index.json', function(req, res) {
             id : id
         }   
     }).then(allresults => {
+        if(!allresults || allresults.length == 0){
+            res.status(404).end();
+            return;
+        }
         let versions = allresults;
-        versions = versions.sort((a,b) => { return b.commitTimeStamp - a.commitTimeStamp });
-        versions = versions.sort((a,b) => { return semver.gt(semver.coerce(a.version),semver.coerce(b.version)) });
-    
-        let commitId = versions[0].commitId;
-        let commitTimeStamp = versions[0].commitTimeStamp;
-
+        versions = versions.sort((a,b) => { return b.published - a.published });
+        versions = versions.sort((a,b) => { return semver.lt(semver.coerce(a.version),semver.coerce(b.version)) });
         let packages = versions.map(v => new Package(v));
-        let catalogPage = new Catalog(commitId, commitTimeStamp,packages.length,packages);
-        let catalogRoot = new Catalog(commitId, commitTimeStamp, 1, [catalogPage]);
+        let catalogPage = new CatalogPage(packages.length,packages,versions[versions.length -1].version,versions[0].version);
+        let catalogRoot = new Catalog( 1, [catalogPage]);
 
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(catalogRoot,null,'\t'));
@@ -67,4 +83,24 @@ router.get('/:package/index.json', function(req, res) {
     
 });
 
+
+
+router.get('/:package/:version.json', function(req, res) {
+    let id = req.params.package;
+    let version = req.params.version;
+    db.Package.find({
+        where:{ 
+            id : id,
+            version: version
+        }   
+    }).then(result => {
+        if(result == null) res.status(404).end();
+        else{
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(new VersionPackage(result),null,'\t'));
+        }
+    })
+
+    
+});
 module.exports = router;

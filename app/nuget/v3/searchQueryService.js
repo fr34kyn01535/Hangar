@@ -18,23 +18,26 @@ class Package{
         this.version = packageContent.version;
         this.versions = versions;
         this.registration = process.env.ADDRESS + '/registration/'+packageContent.id+'/index.json',
+        this["@id"] = this.registration;
+        this["@type"] = "Package";
         this.description = packageContent.description;
-        this.authors = packageContent.authors ? packageContent.authors.split(",").map(m => m.trim()) : "";
+        this.authors = packageContent.authors ? packageContent.authors.split(',').map(m => m.trim()) : '';
         this.iconUrl = packageContent.iconUrl;
         this.licenseUrl = packageContent.licenseUrl;
         this.projectUrl = packageContent.projectUrl;
         this.summary = packageContent.summary;
         this.tags = packageContent.tags ? packageContent.tags.split(",").map(m => m.trim()) : "";
         this.title = packageContent.title;
-        this.totalDownloads = totalDownloads;
+        this.totalDownloads = totalDownloads || 0;
         this.verified = packageContent.verified;
     }
 }
 
 class Version{
-    constructor(version, downloads){
+    constructor(id,version, downloads){
+        this["@id"] = process.env.ADDRESS + '/registration/'+id+'/'+version+'.json'
         this.version = version;
-        this.downloads = downloads;
+        this.downloads = downloads || 0;
     }
 }
 
@@ -90,10 +93,10 @@ router.get('/', function(req, res) {
             let results = [];
             for(let id of ids){
                 let versions = allresults.filter(result => result.id == id);
-                versions = versions.sort((a,b) => { return b.commitTimeStamp - a.commitTimeStamp });
+                versions = versions.sort((a,b) => { return b.published - a.published });
                 versions = versions.sort((a,b) => { return semver.lt(semver.coerce(a.version),semver.coerce(b.version)) });
                 let totalDownloads = versions.reduce((a, b) => a.downloads+b.downloads, 0);
-                results.push(new Package(versions[0],versions.map(v => new Version(v.version,v.downloads)),totalDownloads));
+                results.push(new Package(versions[0],versions.map(v => new Version(id,v.version,v.downloads)),totalDownloads));
             }
 
             let response = new QueryResult(results.length,results);

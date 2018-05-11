@@ -13,8 +13,6 @@ module.exports = (sequelize, DataTypes) => {
         requireLicenseAcceptance: DataTypes.BOOLEAN,
         developmentDependency: DataTypes.BOOLEAN,
         published: DataTypes.DATE,
-        commitTimeStamp: DataTypes.DATE,
-        commitId: DataTypes.STRING(36),
         projectUrl: DataTypes.STRING,
         iconUrl: DataTypes.STRING,
         licenseUrl: DataTypes.STRING,

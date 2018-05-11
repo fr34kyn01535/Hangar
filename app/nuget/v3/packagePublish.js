@@ -49,8 +49,6 @@ router.put('/', upload.single('package'),function(req, res) {
                         userId: req.user.id,
                         verified: false,
                         published: new Date(),
-                        commitTimeStamp: new Date(),
-                        commitId: uuid(),
                         downloads: 0,
                         listed: true
                     }
