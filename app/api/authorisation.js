@@ -7,6 +7,7 @@ const uuid = require("uuid/v4");
 
 module.exports = function (app) {
     var state = uuid();
+
     router.get("/login", function (req, res) {
         var url = 'https://github.com/login/oauth/authorize?client_id=' + process.env.OAUTH_CLIENT_ID + '&state=' + state;
         res.setHeader('location', url);
@@ -38,7 +39,7 @@ module.exports = function (app) {
                         var userDetails = JSON.parse(body);
                         if(!userDetails.id) res.status(500).end();
                         db.User.findOne({ where: {gitHubId: userDetails.id} }).then(user => {
-                            var properties = { sessionKey : uuid() }
+                            var properties = { }
                             
                             properties.userName = userDetails.login;
                             properties.user = userDetails.user;
@@ -47,18 +48,16 @@ module.exports = function (app) {
                             if(user == null){
                                 properties.apiKey = uuid();
                                 properties.gitHubId = userDetails.id;
-                                user = db.User.create(properties).then(()=>{
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.send(JSON.stringify(properties,null,'\t'));
-                                    res.end();
+                                user = db.User.create(properties).then((user)=>{
+                                    req.session.user = user;
+                                    res.status(200).end();
                                 })
                             }else{
                                 properties.apiKey = user.apiKey;
                                 properties.gitHubId = user.gitHubId;
-                                user.update(properties).then(()=>{
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.send(JSON.stringify(properties,null,'\t'));
-                                    res.end();
+                                user.update(properties).then((user)=>{
+                                    req.session.user = user;
+                                    res.status(200).end();
                                 })
                             }
                         });
@@ -66,6 +65,15 @@ module.exports = function (app) {
                 }
             });
         };
+    });
+
+
+    router.get("/apiKey", function (req, res) {
+        if(!req.authenticated || !req.user.apiKey) {
+            res.status(401).end();
+            return;
+        }
+        res.send(req.user.apiKey);
     });
 
     return router;

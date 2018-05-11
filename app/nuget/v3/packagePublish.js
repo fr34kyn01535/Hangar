@@ -14,7 +14,10 @@ const db = require('../../../models/index');
 
 // https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#push-a-package
 router.put('/', upload.single('package'),function(req, res) {
-    if(!req.authenticated) return res.status(401).end();
+    if(!req.authenticated) {
+        res.status(401).end();
+        return;
+    }
     try {
         let files = [];
         let nuspecText = '';
@@ -121,7 +124,10 @@ router.put('/', upload.single('package'),function(req, res) {
 
 // https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#delete-a-package
 router.delete('/:id/:version', function(req, res) {
-    if(!req.authenticated) res.status(401).end();
+    if(!req.authenticated) {
+        res.status(401).end();
+        return;
+    }
     var file = './packages/' +req.params.id+'/'+req.params.version+'/'+ req.params.id + "-" + req.params.version +".nupkg";
     if(fs.existsSync(file)){
         db.Package.findOne({ where: {id: req.params.id, version: req.params.version, userId: req.user.id} }).then(p => {
@@ -144,7 +150,10 @@ router.delete('/:id/:version', function(req, res) {
 
 // https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#relist-a-package
 router.post('/:id/:version', function(req, res) {
-    if(!req.authenticated) res.status(401).end();
+    if(!req.authenticated) {
+        res.status(401).end();
+        return;
+    }
     res.status(404); 
     res.end();
 });

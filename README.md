@@ -11,9 +11,6 @@ Services to implement:
 
 Additional features:
 * GitHub Oauth login and user registration at $ADDRESS/authorisation/login
-    To authenticate set the header x-nuget-apikey or x-nuget-sessionkey.
-    The endpoint returns a json with api and session key.
-
 * Extended SearchQueryService to return only my own packages with a query parameter ($ADDRESS/query/?my=true)
 
 Further plans:
@@ -29,4 +26,5 @@ DB_NAME=hangar
 ADDRESS=http://localhost:8080
 OAUTH_CLIENT_ID=
 OAUTH_CLIENT_SECRET=
+SESSION_SECRET=
 ```

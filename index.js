@@ -1,6 +1,8 @@
 "use strict";
 require('dotenv').config();
 const uuid = require('uuid/v4');
+var session = require('express-session');
+
 
 const db = require('./models/index');
 db.sequelize.sync().then(() => {
@@ -24,22 +26,27 @@ db.sequelize.sync().then(() => {
 });
 
 const app = require('express')();
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  cookie: { maxAge: 86400000 ,secure: false },
+  resave: false,
+  saveUninitialized: true
+}))
+
 app.use(require('body-parser').json());
 
 app.use(function (req, res, next) {
+  if(req.session.user) {
+    req.authenticated = true;
+    req.user = req.session.user;
+    next();
+    return;
+  }
   var apiKey = req.headers["x-nuget-apikey"];
   if(!apiKey){
-    var sessionKey = req.headers["x-nuget-sessionkey"];
-    if(!sessionKey){
       req.authenticated = false;
       next();
-    }
-    else
-    db.User.findOne({ where: {sessionKey: sessionKey} }).then(user => {
-      req.authenticated = user != null;
-      req.user = user;
-      next();
-    })
   }
   else
   db.User.findOne({ where: {apiKey: apiKey} }).then(user => {
