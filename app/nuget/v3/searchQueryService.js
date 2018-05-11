@@ -48,34 +48,39 @@ router.get('/', function(req, res) {
     var preRelease = req.query.prerelease == true || req.query.prerelease == "true" || false;
     var semVerLevel = req.query.semVerLevel;
 
+    var where = {
+        [Op.and]:[
+            {
+                [Op.or]: [
+                    {
+                        summary: {
+                            [Op.like]: '%'+query+'%'
+                        }
+                    },
+                    {
+                        id: {
+                            [Op.like]: '%'+query+'%'
+                        }
+                    },
+                    {
+                        title: {
+                            [Op.like]: '%'+query+'%'
+                        }
+                    }
+                ]
+            },{
+                verified: !preRelease
+            }
+        ]
+    };
+
+    
+    if(req.query.my && req.user){
+        where[Op.and].push({userId:req.user.id});
+    }
 
     db.Package.findAll({
-        where: {
-            [Op.and]:[
-                {
-                    [Op.or]: [
-                        {
-                            summary: {
-                                [Op.like]: '%'+query+'%'
-                            }
-                        },
-                        {
-                            id: {
-                                [Op.like]: '%'+query+'%'
-                            }
-                        },
-                        {
-                            title: {
-                                [Op.like]: '%'+query+'%'
-                            }
-                        }
-                    ]
-                },{
-                    verified: !preRelease
-                }
-            ]
-            
-        },
+        where: where,
         attributes: ['id'],
         group: ['id'],
         offset: skip,

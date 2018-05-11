@@ -1,5 +1,6 @@
 "use strict";
 require('dotenv').config();
+const uuid = require('uuid/v4');
 
 const db = require('./models/index');
 db.sequelize.sync().then(() => {
@@ -11,8 +12,8 @@ db.sequelize.sync().then(() => {
         },
       defaults: { 
         id: 1,
-        userName: 'Admin',
-        apiKey: "test123"
+        userName: 'Administrator',
+        apiKey: uuid()
       }
     });
 
@@ -28,8 +29,17 @@ app.use(require('body-parser').json());
 app.use(function (req, res, next) {
   var apiKey = req.headers["x-nuget-apikey"];
   if(!apiKey){
-    req.authenticated = false;
-    next();
+    var sessionKey = req.headers["x-nuget-sessionkey"];
+    if(!sessionKey){
+      req.authenticated = false;
+      next();
+    }
+    else
+    db.User.findOne({ where: {sessionKey: sessionKey} }).then(user => {
+      req.authenticated = user != null;
+      req.user = user;
+      next();
+    })
   }
   else
   db.User.findOne({ where: {apiKey: apiKey} }).then(user => {
@@ -38,7 +48,6 @@ app.use(function (req, res, next) {
     next();
   })
 });
-
 
 app.get('/', function(req, res){ 
     res.redirect('/index.json');
@@ -106,6 +115,8 @@ app.use('/registration', require('./app/nuget/v3/registrationsBaseUrl'));
 app.use('/query', require('./app/nuget/v3/searchQueryService'));
 app.use('/api/v2/package', require('./app/nuget/v3/packagePublish'));
 app.use('/packages', require('./app/nuget/v3/packageBaseAddress'));
+
+app.use('/authorisation', require('./app/api/authorisation')(app));
 
 app.listen(process.env.PORT,function(){
     console.log("Listening on "+process.env.PORT);
