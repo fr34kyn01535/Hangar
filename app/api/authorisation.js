@@ -47,16 +47,20 @@ module.exports = function (app) {
                             if(user == null){
                                 properties.apiKey = uuid();
                                 properties.gitHubId = userDetails.id;
-                                user = db.User.create(properties);
+                                user = db.User.create(properties).then(()=>{
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.send(JSON.stringify(properties,null,'\t'));
+                                    res.end();
+                                })
                             }else{
                                 properties.apiKey = user.apiKey;
                                 properties.gitHubId = user.gitHubId;
-                                user.update(properties);
+                                user.update(properties).then(()=>{
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.send(JSON.stringify(properties,null,'\t'));
+                                    res.end();
+                                })
                             }
-
-                            res.setHeader('Content-Type', 'application/json');
-                            res.send(JSON.stringify(properties,null,'\t'));
-                            res.end();
                         });
                     });
                 }
