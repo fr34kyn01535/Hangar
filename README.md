@@ -4,12 +4,15 @@ The services speficiation is to be found at https://docs.microsoft.com/en-us/nug
 
 Services to implement:
 - [x] Index
-- [ ] RegistrationsBaseUrl
-- [ ] SearchQueryService
-- [ ] PackagePublis
-- [ ] PackageBaseAddress
+- [X] RegistrationsBaseUrl
+- [X] SearchQueryService
+- [X] PackagePublish
+- [X] PackageBaseAddress
 
-Further service implementations are not planned right now.
+Further plans:
+* API to manage users 
+* Endpoint to list a users repositories
+* Implement JWT / Oauth
 
 # Environment Variables
 ```

@@ -46,7 +46,7 @@ router.get('/', function(req, res) {
     var semVerLevel = req.query.semVerLevel;
 
 
-    db.Package.findAndCountAll({
+    db.Package.findAll({
         where: {
             [Op.and]:[
                 {
@@ -79,7 +79,7 @@ router.get('/', function(req, res) {
         limit: take
      })
      .then(result => {
-        let ids = result.rows.map(r => r.id);
+        let ids = result.map(r => r.id);
         db.Package.findAll({
             where:{ 
                 id :{
@@ -89,14 +89,14 @@ router.get('/', function(req, res) {
         }).then(allresults => {
             let results = [];
             for(let id of ids){
-                let versions = allresults.filter(id => id == id);
+                let versions = allresults.filter(result => result.id == id);
                 versions = versions.sort((a,b) => { return b.commitTimeStamp - a.commitTimeStamp });
-                versions = versions.sort((a,b) => { return semver.gt(semver.coerce(a.version),semver.coerce(b.version)) });
+                versions = versions.sort((a,b) => { return semver.lt(semver.coerce(a.version),semver.coerce(b.version)) });
                 let totalDownloads = versions.reduce((a, b) => a.downloads+b.downloads, 0);
                 results.push(new Package(versions[0],versions.map(v => new Version(v.version,v.downloads)),totalDownloads));
             }
 
-            var response = new QueryResult(result.count,results);
+            let response = new QueryResult(results.length,results);
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(response,null,'\t'));
         })
