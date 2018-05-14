@@ -39,7 +39,10 @@ module.exports = function (app) {
                         }
                     },function(error,response,body){
                         var userDetails = JSON.parse(body);
-                        if(!userDetails.id) res.status(500).end();
+                        if(!userDetails.id){
+                            res.status(500).end();
+                            return;
+                        } 
                         db.User.findOne({ where: {gitHubId: userDetails.id} }).then(user => {
                             var properties = { }
                             
