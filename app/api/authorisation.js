@@ -8,6 +8,8 @@ const uuid = require("uuid/v4");
 module.exports = function (app) {
     var state = uuid();
 
+	if(!process.env.OAUTH_CLIENT_ID || !process.env.OAUTH_CLIENT_SECRET) return router;
+	
     router.get("/login", function (req, res) {
         var url = 'https://github.com/login/oauth/authorize?client_id=' + process.env.OAUTH_CLIENT_ID + '&state=' + state;
         res.setHeader('location', url);
