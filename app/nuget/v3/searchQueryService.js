@@ -42,7 +42,7 @@ class Version{
 }
 
 router.get('/', function(req, res) {
-    var query = req.query.q = "";
+    var query = req.query.q || "";
     var skip = req.query.skip ? parseInt(req.query.skip) : 0;
     var take = req.query.take ? parseInt(req.query.take) : 20;
     var preRelease = req.query.prerelease == true || req.query.prerelease == "true" || false;
