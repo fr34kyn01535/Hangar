@@ -6,19 +6,6 @@ var session = require('express-session');
 
 const db = require('./models/index');
 db.sequelize.sync().then(() => {
-
-    db.User.findOrCreate(
-      {
-        where: {
-          id: 1
-        },
-      defaults: { 
-        id: 1,
-        userName: 'Administrator',
-        apiKey: uuid()
-      }
-    });
-
     console.log("Database up to date.");
 }).catch(error => {
     console.log("Error syncing database:",error);

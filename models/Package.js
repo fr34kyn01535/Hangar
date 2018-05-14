@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         listed: { type: DataTypes.BOOLEAN, defaultValue: true },
         tags: DataTypes.STRING,
         authors: DataTypes.STRING
-    },{ tableName: process.env.REPOSITORY_NAME ? process.env.REPOSITORY_NAME : 'packages' });
+    },{ tableName: process.env.REPOSITORY_NAME ? process.env.REPOSITORY_NAME : 'Packages' });
 
     return Package;
 };
