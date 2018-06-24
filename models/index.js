@@ -12,10 +12,8 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialectOptions: {
     charset: 'utf8mb4'
   },
-  define:{
-    charset: 'utf8',
-    collate: 'utf8_general_ci'
-  }
+  charset: 'utf8',
+  collate: 'utf8_general_ci'
 });
 
 fs
