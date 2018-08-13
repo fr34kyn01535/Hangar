@@ -10,7 +10,7 @@ Services to implement:
 - [X] PackageBaseAddress (https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource)
 
 Additional features:
-* GitHub Oauth login and user registration at $ADDRESS/authorisation/login
+* GitHub Oauth login and user registration at $ADDRESS/authorisation/login (ApiKey at $ADDRESS/authorisation/apiKey)
 * Extended SearchQueryService to return only my own packages with a query parameter ($ADDRESS/query/?my=true)
 
 Further plans:
