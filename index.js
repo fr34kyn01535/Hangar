@@ -2,7 +2,7 @@
 require('dotenv').config();
 const uuid = require('uuid/v4');
 var session = require('express-session');
-
+console.log("Version 1.2");
 
 const db = require('./models/index');
 db.sequelize.sync().then(() => {

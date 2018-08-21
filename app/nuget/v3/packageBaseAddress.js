@@ -21,11 +21,15 @@ router.get('/:package/index.json', function(req, res) {
 router.get('/:package/:version/*.nupkg', function(req, res) {
   let id = req.params.package;
   let version = req.params.version;
-  var file = './packages/' +id+'/'+version+'/'+ id + "-" + version +".nupkg";
-  if(fs.existsSync(file)){
-    res.download(file);
-  } else
-    res.status(404);
+  
+  db.Package.findOne({ where: { id: id, version:version } }).then(pkg => {
+	var file = './packages/' +id+'/'+version+'/'+ id + "-" + version +".nupkg";
+	if(pkg != null && fs.existsSync(file)){
+		pkg.increment("downloads",{by:1});
+		res.download(file);
+	}else
+		res.status(404);
+  });
 });
 
 // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource#download-package-manifest-nuspec
