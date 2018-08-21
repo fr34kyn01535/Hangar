@@ -28,7 +28,7 @@ class Package{
         this.summary = packageContent.summary;
         this.tags = packageContent.tags ? packageContent.tags.split(",").map(m => m.trim()) : "";
         this.title = packageContent.title;
-        this.totalDownloads = this.versions.reduce((a, b) => a.downloads+b.downloads, {downloads:0});;
+        this.totalDownloads = this.versions.reduce((a, b) => a+b.downloads, 0);
         this.verified = packageContent.verified;
     }
 }
